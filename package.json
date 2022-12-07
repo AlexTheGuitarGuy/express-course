@@ -1,0 +1,18 @@
+{
+  "name": "first-project",
+  "version": "1.0.0",
+  "description": "First project to learn backend",
+  "scripts": {
+    "start": "NODE_ENV=production node index",
+    "dev": "nodemon index"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.0"
+  },
+  "type": "module"
+}
