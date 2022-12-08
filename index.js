@@ -1,8 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import colors from "colors";
 
-import bitches from "./routes/bitches.js";
+import bootcamps from "./routes/bootcamps.js";
 import connectDb from "./config/db.js";
 
 dotenv.config({
@@ -15,11 +16,13 @@ const { PORT = 6969, NODE_ENV } = process.env;
 
 const app = express();
 const server = app.listen(PORT, () =>
-  console.log(`Hui on port ${PORT} in ${NODE_ENV} mode.`)
+  console.log(
+    `Server open on port ${PORT} in ${NODE_ENV} mode.`.yellow.bold.underline
+  )
 );
 
 process.on("unhandledRejection", (error) => {
-  console.log(`Error: ${error.message}`);
+  console.log(`Error: ${error.message}`.red.bold);
 
   server.close(() => process.exit(1));
 });
@@ -27,4 +30,4 @@ process.on("unhandledRejection", (error) => {
 if (NODE_ENV === "development") app.use(morgan("dev"));
 
 const baseUrl = "/api/v1";
-app.use(`${baseUrl}/bitches`, bitches);
+app.use(`${baseUrl}/bootcamps`, bootcamps);
