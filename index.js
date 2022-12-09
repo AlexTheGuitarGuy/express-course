@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import colors from "colors";
 
-import bootcamps from "./routes/bootcamps.js";
 import connectDb from "./config/db.js";
+import bootcamps from "./routes/bootcamps.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 //  Environment variables
