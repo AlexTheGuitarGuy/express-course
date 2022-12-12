@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import dotenv from "dotenv";
+import colors from "colors";
 
 import Bootcamp from "./models/Bootcamp.js";
 import connectDb from "./config/db.js";
