@@ -1,10 +1,9 @@
 import { ErrorResponse } from "../utils/errorResponse.js";
 
 const errorHandler = (err, req, res, next) => {
-  console.log(err.name);
-
   let formattedError;
-  if (err.name === "CastError") {
+  if (err.statusCode) formattedError = err;
+  else if (err.name === "CastError") {
     formattedError = new ErrorResponse(
       `Could not find resource with ID ${err.value}`,
       404

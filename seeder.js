@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import colors from "colors";
 
 import Bootcamp from "./models/Bootcamp.js";
+import Course from "./models/Course.js";
 import connectDb from "./config/db.js";
 
 dotenv.config({
@@ -17,7 +18,12 @@ const importData = async () => {
       fs.readFileSync("./_data/bootcamps.json", "utf-8")
     );
 
+    const courses = JSON.parse(
+      fs.readFileSync("./_data/courses.json", "utf-8")
+    );
+
     await Bootcamp.create(bootcamps);
+    await Course.create(courses);
 
     console.log("Data imported!".green.inverse);
   } catch (error) {
@@ -28,6 +34,7 @@ const importData = async () => {
 const destroyData = async () => {
   try {
     await Bootcamp.deleteMany();
+    await Course.deleteMany();
 
     console.log("Data destroyed!".red.inverse);
   } catch (error) {
@@ -44,8 +51,13 @@ switch (process.argv[2]) {
     await destroyData();
     break;
   }
+  case "-r": {
+    await destroyData();
+    await importData();
+    break;
+  }
   default: {
-    console.log("No flag was chosen!".red);
+    console.log("No valid flag was chosen!".red);
   }
 }
 

@@ -5,6 +5,7 @@ import colors from "colors";
 
 import connectDb from "./config/db.js";
 import bootcamps from "./routes/bootcamps.js";
+import courses from "./routes/courses.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 //  Environment variables
@@ -35,6 +36,7 @@ app.use(express.json());
 //  API implementation
 const baseUrl = "/api/v1";
 app.use(`${baseUrl}/bootcamps`, bootcamps);
+app.use(`${baseUrl}/courses`, courses);
 
 //  Middleware after API
 app.use(errorHandler);
