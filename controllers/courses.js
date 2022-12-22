@@ -10,23 +10,15 @@ import { ErrorResponse } from "../utils/errorResponse.js";
 export const getCourses = asyncHandler(async (req, res, next) => {
   const { bootcampId } = req.params;
 
-  let query;
+  if (bootcampId) {
+    const courses = await Course.find({ bootcamp: bootcampId });
 
-  if (bootcampId) query = Course.find({ bootcamp: bootcampId });
-  else query = Course.find();
-
-  query.populate({
-    path: "bootcamp",
-    select: "name description",
-  });
-
-  const courses = await query;
-
-  res.status(200).json({
-    success: true,
-    count: courses.length,
-    data: courses,
-  });
+    res.status(200).json({
+      success: true,
+      count: courses.length,
+      data: courses,
+    });
+  } else res.status(200).json(res.advancedResults);
 });
 
 //  @desc     Get one course
