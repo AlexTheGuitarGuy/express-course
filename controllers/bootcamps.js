@@ -1,6 +1,7 @@
 import Bootcamp from "../models/Bootcamp.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 import { ErrorResponse } from "../utils/errorResponse.js";
+import path from "path";
 
 //  @desc     Get all bootcamps
 //  @route    GET /api/v1/bootcamps
@@ -104,6 +105,72 @@ export const putBootcamp = asyncHandler(async (req, res, next) => {
     );
 
   res.status(200).json({ success: true, data: bootcamp });
+});
+
+//  @desc     Add photo to bootcamp
+//  @route    PUT /api/v1/bootcamp/:id/photos
+//  @access   Private
+export const uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
+  const { MAX_FILE_SIZE, FILE_UPLOAD_PATH } = process.env;
+
+  const { id: bootcampId } = req.params;
+
+  const bootcamp = await Bootcamp.findById(bootcampId);
+
+  if (!bootcamp)
+    return next(
+      new ErrorResponse(`Could not find bootcamp with ID ${bootcampId}`, 404)
+    );
+
+  if (!req.files)
+    return next(new ErrorResponse("Could not find file inside request", 400));
+
+  const image = req.files.file;
+
+  if (!image.mimetype.startsWith("image"))
+    return next(
+      new ErrorResponse(
+        `Only images are allowed, file of type ${image.mimetype} is invalid.`,
+        400
+      )
+    );
+
+  if (image.size > MAX_FILE_SIZE)
+    return next(
+      new ErrorResponse(
+        `Maximum file size is ${MAX_FILE_SIZE}, the image's size is ${image.size}.`,
+        400
+      )
+    );
+
+  image.name = `photo_${bootcampId}${path.parse(image.name).ext}`;
+
+  console.log(FILE_UPLOAD_PATH, MAX_FILE_SIZE);
+
+  image.mv(`${FILE_UPLOAD_PATH}/${image.name}`, async (error) => {
+    console.error(error);
+    if (error)
+      return next(
+        new ErrorResponse(
+          "An error has occurred while uploading the file.",
+          500
+        )
+      );
+
+    try {
+      await Bootcamp.findByIdAndUpdate(bootcampId, { photo: image.name });
+
+      res.status(200).json({
+        success: true,
+        data: image.name,
+      });
+    } catch (error) {
+      console.error(error);
+      return next(
+        new ErrorResponse(`Could not update bootcamp: ${error.message}`, 500)
+      );
+    }
+  });
 });
 
 //  @desc     Delete bootcamp

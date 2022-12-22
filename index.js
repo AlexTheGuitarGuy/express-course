@@ -2,11 +2,17 @@ import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import colors from "colors";
+import fileupload from "express-fileupload";
+import { fileURLToPath } from "url";
 
 import connectDb from "./config/db.js";
 import bootcamps from "./routes/bootcamps.js";
 import courses from "./routes/courses.js";
 import errorHandler from "./middleware/errorHandler.js";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //  Environment variables
 dotenv.config({
@@ -31,6 +37,8 @@ process.on("unhandledRejection", (error) => {
 
 //  Middleware before API
 if (NODE_ENV === "development") app.use(morgan("dev"));
+app.use(fileupload({}));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
 //  API implementation
