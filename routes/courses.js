@@ -5,11 +5,12 @@ import {
   putCourse,
   deleteCourse,
 } from "../controllers/courses.js";
-import express from "express";
+import { Router } from "express";
 import advancedResults from "../middleware/advancedResults.js";
 import Course from "../models/Course.js";
+import { authorize, protect } from "../middleware/auth.js";
 
-const router = express.Router({ mergeParams: true });
+const router = Router({ mergeParams: true });
 
 router
   .route("/")
@@ -20,8 +21,12 @@ router
     }),
     getCourses
   )
-  .post(postCourse);
+  .post(protect, authorize("publisher", "admin"), postCourse);
 
-router.route("/:id").get(getCourse).put(putCourse).delete(deleteCourse);
+router
+  .route("/:id")
+  .get(getCourse)
+  .put(protect, authorize("publisher", "admin"), putCourse)
+  .delete(protect, authorize("publisher", "admin"), deleteCourse);
 
 export default router;

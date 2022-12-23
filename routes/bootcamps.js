@@ -1,4 +1,4 @@
-import express from "express";
+import { Router } from "express";
 import {
   getBootcamp,
   getBootcamps,
@@ -11,18 +11,25 @@ import {
 import courseRouter from "./courses.js";
 import advancedResults from "../middleware/advancedResults.js";
 import Bootcamp from "../models/Bootcamp.js";
+import { authorize, protect } from "../middleware/auth.js";
 
-const router = express.Router();
+const router = Router();
 
 router.use("/:bootcampId/courses", courseRouter);
 
 router
   .route("/")
   .get(advancedResults(Bootcamp, "courses"), getBootcamps)
-  .post(postBootcamp);
+  .post(protect, authorize("publisher", "admin"), postBootcamp);
 
-router.route(`/:id`).get(getBootcamp).put(putBootcamp).delete(deleteBootcamp);
+router
+  .route(`/:id`)
+  .get(getBootcamp)
+  .put(protect, authorize("publisher", "admin"), putBootcamp)
+  .delete(protect, authorize("publisher", "admin"), deleteBootcamp);
 
-router.route("/:id/photos").put(uploadBootcampPhoto);
+router
+  .route("/:id/photos")
+  .put(protect, authorize("publisher", "admin"), uploadBootcampPhoto);
 
 export default router;

@@ -8,8 +8,10 @@ import { fileURLToPath } from "url";
 import connectDb from "./config/db.js";
 import bootcamps from "./routes/bootcamps.js";
 import courses from "./routes/courses.js";
+import auth from "./routes/auth.js";
 import errorHandler from "./middleware/errorHandler.js";
 import path from "path";
+import cookieParser from "cookie-parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,12 +41,14 @@ process.on("unhandledRejection", (error) => {
 if (NODE_ENV === "development") app.use(morgan("dev"));
 app.use(fileupload({}));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieParser());
 app.use(express.json());
 
 //  API implementation
 const baseUrl = "/api/v1";
 app.use(`${baseUrl}/bootcamps`, bootcamps);
 app.use(`${baseUrl}/courses`, courses);
+app.use(`${baseUrl}/auth`, auth);
 
 //  Middleware after API
 app.use(errorHandler);
