@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import slugify from "slugify";
 import Course from "./Course.js";
 
@@ -98,6 +98,11 @@ const BootcampSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   {

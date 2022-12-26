@@ -28,7 +28,20 @@ export const getBootcamp = asyncHandler(async (req, res, next) => {
 //  @route    POST /api/v1/bootcamp
 //  @access   Private
 export const postBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.create(req.body);
+  req.body.user = req.user.id;
+
+  const userId = req.body.user;
+
+  let bootcamp = await Bootcamp.findOne({ user: userId });
+  if (bootcamp && req.user.role !== "admin")
+    return next(
+      new ErrorResponse(
+        `User with ID ${userId} has already posted a bootcamp.`,
+        401
+      )
+    );
+
+  bootcamp = await Bootcamp.create(req.body);
 
   res.status(201).json({ success: true, data: bootcamp });
 });
@@ -37,7 +50,17 @@ export const postBootcamp = asyncHandler(async (req, res, next) => {
 //  @route    PUT /api/v1/bootcamp/:id
 //  @access   Private
 export const putBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+  let bootcamp = await Bootcamp.findById(req.params.id);
+
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin")
+    return next(
+      new ErrorResponse(
+        `User with ID ${req.user.id} cannot update bootcamp with ID ${req.params.id}`,
+        401
+      )
+    );
+
+  bootcamp = await Bootcamp.findOneAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
@@ -63,6 +86,14 @@ export const uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
   if (!bootcamp)
     return next(
       new ErrorResponse(`Could not find bootcamp with ID ${bootcampId}`, 404)
+    );
+
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin")
+    return next(
+      new ErrorResponse(
+        `User with ID ${req.user.id} cannot upload photo to bootcamp with ID ${req.params.id}`,
+        401
+      )
     );
 
   if (!req.files)
@@ -101,7 +132,7 @@ export const uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
       );
 
     try {
-      await Bootcamp.findByIdAndUpdate(bootcampId, { photo: image.name });
+      await Bootcamp.findOneAndUpdate(bootcampId, { photo: image.name });
 
       res.status(200).json({
         success: true,
@@ -125,6 +156,14 @@ export const deleteBootcamp = asyncHandler(async (req, res, next) => {
   if (!bootcamp)
     return next(
       new ErrorResponse(`Could not find bootcamp with ID ${req.params.id}`, 404)
+    );
+
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin")
+    return next(
+      new ErrorResponse(
+        `User with ID ${req.user.id} cannot upload photo to bootcamp with ID ${req.params.id}`,
+        401
+      )
     );
 
   bootcamp.remove();
