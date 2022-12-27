@@ -1,9 +1,11 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/User.js";
 import { ErrorResponse } from "../utils/errorResponse.js";
+import sendEmail from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 //  @desc       Register user
-//  @route      api/v1/auth/register
+//  @route      POST api/v1/auth/register
 //  @access     Public
 export const register = asyncHandler(async (req, res, next) => {
   const { name, email, password, role } = req.body;
@@ -14,7 +16,7 @@ export const register = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc       Log user in
-//  @route      api/v1/auth/login
+//  @route      POST api/v1/auth/login
 //  @access     Public
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -30,6 +32,101 @@ export const login = asyncHandler(async (req, res, next) => {
 
   if (!isPasswordValid)
     return next(new ErrorResponse("Invalid credentials.", 401));
+
+  sendTokenResponse(user, 200, res);
+});
+
+//  @desc       Get logged-in user
+//  @route      GET api/v1/auth/me
+//  @access     Private
+export const getMe = asyncHandler(async (req, res, next) => {
+  if (!req.user || !req.user.id)
+    return next(new ErrorResponse("Cannot find logged in user.", 500));
+
+  const user = await User.findById(req.user.id);
+
+  if (!user)
+    return next(
+      new ErrorResponse(`User with ID ${req.user.id} was not found.`, 500)
+    );
+
+  res.status(200).json({ success: true, data: user });
+});
+
+//  @desc       Send reset password email
+//  @route      POST api/v1/auth/forgot-password
+//  @access     Public
+export const forgotPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user)
+    return next(
+      new ErrorResponse(
+        `Could not find user with email ${req.body.email}.`,
+        404
+      )
+    );
+
+  const resetToken = user.getResetToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  const resetUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/auth/reset-password/${resetToken}`;
+
+  const message = `You have requested a password reset. To continue, create a put request at ${resetUrl} . If you didn't intend to reset your password, just ignore this message.`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Password reset request.",
+      message,
+    });
+
+    res.status(200).json({ success: true, data: "Email has been sent." });
+  } catch (error) {
+    console.error(error);
+
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new ErrorResponse(
+        `Could not send reset password email: ${error.message}`,
+        500
+      )
+    );
+  }
+});
+
+//  @desc       Reset password
+//  @route      PUT api/v1/auth/reset-password/:resetToken
+//  @access     Public
+export const resetPassword = asyncHandler(async (req, res, next) => {
+  if (!req.body.password)
+    return next(new ErrorResponse("Please add a password to the body.", 400));
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.resetToken)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+  if (!user)
+    return next(
+      new ErrorResponse(`Token ${req.params.resetToken} is invalid.`, 400)
+    );
+
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetpasswordExpire = undefined;
+  await user.save({ validateBeforeSave: false });
 
   sendTokenResponse(user, 200, res);
 });
@@ -51,20 +148,3 @@ const sendTokenResponse = (user, responseStatus, res) => {
     .cookie("token", token, options)
     .json({ success: true, token });
 };
-
-//  @desc       Get logged-in user
-//  @route      api/v1/auth/me
-//  @access     Private
-export const getMe = asyncHandler(async (req, res, next) => {
-  if (!req.user || !req.user.id)
-    return next(new ErrorResponse("Cannot find logged in user.", 500));
-
-  const user = await User.findById(req.user.id);
-
-  if (!user)
-    return next(
-      new ErrorResponse(`User with ID ${req.user.id} was not found.`, 500)
-    );
-
-  res.status(200).json({ success: true, data: user });
-});

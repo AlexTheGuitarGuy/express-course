@@ -32,7 +32,7 @@ export const getCourse = asyncHandler(async (req, res, next) => {
 
   if (!course)
     return next(
-      new ErrorResponse(`Could not find course with ID ${req.params.id}`, 404)
+      new ErrorResponse(`Could not find course with ID ${req.params.id}.`, 404)
     );
 
   res.status(200).json({ success: true, data: course });
@@ -51,13 +51,13 @@ export const postCourse = asyncHandler(async (req, res, next) => {
 
   if (!bootcamp)
     return next(
-      new ErrorResponse(`Could not find bootcamp with ID ${bootcampId}`, 404)
+      new ErrorResponse(`Could not find bootcamp with ID ${bootcampId}.`, 404)
     );
 
   if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin")
     return next(
       new ErrorResponse(
-        `User with ID ${req.user.id} cannot post course to bootcamp with ID ${req.params.bootcampId}`,
+        `User with ID ${req.user.id} cannot post course to bootcamp with ID ${req.params.bootcampId}.`,
         401
       )
     );
@@ -75,7 +75,7 @@ export const putCourse = asyncHandler(async (req, res, next) => {
 
   if (!course)
     return next(
-      new ErrorResponse(`Could not find course with ID ${req.params.id}`, 404)
+      new ErrorResponse(`Could not find course with ID ${req.params.id}.`, 404)
     );
 
   console.log(course.user.toString(), req.user.id);
@@ -83,7 +83,7 @@ export const putCourse = asyncHandler(async (req, res, next) => {
   if (course.user.toString() !== req.user.id && req.user.role !== "admin")
     return next(
       new ErrorResponse(
-        `User with ID ${req.user.id} cannot update course with ID ${req.params.id}`,
+        `User with ID ${req.user.id} cannot update course with ID ${req.params.id}.`,
         401
       )
     );
@@ -104,13 +104,13 @@ export const deleteCourse = asyncHandler(async (req, res, next) => {
 
   if (!course)
     return next(
-      new ErrorResponse(`Could not find course with ID ${req.params.id}`, 404)
+      new ErrorResponse(`Could not find course with ID ${req.params.id}.`, 404)
     );
 
   if (course.user.toString() !== req.user.id && req.user.role !== "admin")
     return next(
       new ErrorResponse(
-        `User with ID ${req.user.id} cannot delete course with ID ${req.params.id}`,
+        `User with ID ${req.user.id} cannot delete course with ID ${req.params.id}.`,
         401
       )
     );

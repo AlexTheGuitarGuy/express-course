@@ -18,7 +18,7 @@ export const getBootcamp = asyncHandler(async (req, res, next) => {
 
   if (!bootcamp)
     return next(
-      new ErrorResponse(`Could not find bootcamp with ID ${req.params.id}`, 404)
+      new ErrorResponse(`Could not find bootcamp with ID ${req.params.id}.`, 404)
     );
 
   res.status(200).json({ success: true, data: bootcamp });
@@ -55,7 +55,7 @@ export const putBootcamp = asyncHandler(async (req, res, next) => {
   if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin")
     return next(
       new ErrorResponse(
-        `User with ID ${req.user.id} cannot update bootcamp with ID ${req.params.id}`,
+        `User with ID ${req.user.id} cannot update bootcamp with ID ${req.params.id}.`,
         401
       )
     );
@@ -67,7 +67,7 @@ export const putBootcamp = asyncHandler(async (req, res, next) => {
 
   if (!bootcamp)
     return next(
-      new ErrorResponse(`Could not find bootcamp with ID ${req.params.id}`, 404)
+      new ErrorResponse(`Could not find bootcamp with ID ${req.params.id}.`, 404)
     );
 
   res.status(200).json({ success: true, data: bootcamp });
@@ -85,19 +85,19 @@ export const uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 
   if (!bootcamp)
     return next(
-      new ErrorResponse(`Could not find bootcamp with ID ${bootcampId}`, 404)
+      new ErrorResponse(`Could not find bootcamp with ID ${bootcampId}.`, 404)
     );
 
   if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin")
     return next(
       new ErrorResponse(
-        `User with ID ${req.user.id} cannot upload photo to bootcamp with ID ${req.params.id}`,
+        `User with ID ${req.user.id} cannot upload photo to bootcamp with ID ${req.params.id}.`,
         401
       )
     );
 
   if (!req.files)
-    return next(new ErrorResponse("Could not find file inside request", 400));
+    return next(new ErrorResponse("Could not find file inside request.", 400));
 
   const image = req.files.file;
 
@@ -141,7 +141,7 @@ export const uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
     } catch (error) {
       console.error(error);
       return next(
-        new ErrorResponse(`Could not update bootcamp: ${error.message}`, 500)
+        new ErrorResponse(`Could not update bootcamp: ${error.message}.`, 500)
       );
     }
   });
@@ -155,13 +155,13 @@ export const deleteBootcamp = asyncHandler(async (req, res, next) => {
 
   if (!bootcamp)
     return next(
-      new ErrorResponse(`Could not find bootcamp with ID ${req.params.id}`, 404)
+      new ErrorResponse(`Could not find bootcamp with ID ${req.params.id}.`, 404)
     );
 
   if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin")
     return next(
       new ErrorResponse(
-        `User with ID ${req.user.id} cannot upload photo to bootcamp with ID ${req.params.id}`,
+        `User with ID ${req.user.id} cannot upload photo to bootcamp with ID ${req.params.id}.`,
         401
       )
     );
