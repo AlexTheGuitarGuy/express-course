@@ -131,6 +131,58 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
+//  @desc       Update user email and name
+//  @route      PUT api/v1/auth/update-details
+//  @access     Private
+export const updateDetails = asyncHandler(async (req, res, next) => {
+  const fieldsToUpdate = {
+    email: req.body.email,
+    name: req.body.name,
+  };
+
+  if (!fieldsToUpdate.email || !fieldsToUpdate.name)
+    return next(new ErrorResponse("Please add both email and name.", 400));
+
+  if (!req.user) return next(new ErrorResponse("No user is authorized.", 401));
+
+  const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!user) return next(new ErrorResponse("User not found.", 500));
+
+  res.status(200).json({ success: true, data: user });
+});
+
+//  @desc       Update logged user password
+//  @route      PUT api/v1/auth/update-password
+//  @access     Private
+export const updatePassword = asyncHandler(async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword)
+    return next(
+      new ErrorResponse(
+        "Please add both the current and the new password.",
+        400
+      )
+    );
+
+  const user = await User.findById(req.user.id).select("+password");
+
+  const isPasswordValid = await user.matchPassword(currentPassword);
+
+  if (!isPasswordValid)
+    return next(new ErrorResponse("Current password is invalid.", 401));
+
+  user.password = newPassword;
+
+  await user.save();
+
+  sendTokenResponse(user, 200, res);
+});
+
 const sendTokenResponse = (user, responseStatus, res) => {
   const { JWT_COOKIE_EXPIRE, NODE_ENV } = process.env;
 
