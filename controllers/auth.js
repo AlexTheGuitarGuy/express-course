@@ -131,7 +131,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
-//  @desc       Update user email and name
+//  @desc       Update logged user email and name
 //  @route      PUT api/v1/auth/update-details
 //  @access     Private
 export const updateDetails = asyncHandler(async (req, res, next) => {

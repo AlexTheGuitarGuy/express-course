@@ -12,6 +12,7 @@ import auth from "./routes/auth.js";
 import errorHandler from "./middleware/errorHandler.js";
 import path from "path";
 import cookieParser from "cookie-parser";
+import users from "./routes/users.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,6 +50,7 @@ const baseUrl = "/api/v1";
 app.use(`${baseUrl}/bootcamps`, bootcamps);
 app.use(`${baseUrl}/courses`, courses);
 app.use(`${baseUrl}/auth`, auth);
+app.use(`${baseUrl}/users`, users);
 
 //  Middleware after API
 app.use(errorHandler);

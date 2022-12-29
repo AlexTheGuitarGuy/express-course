@@ -11,7 +11,7 @@ export const getBootcamps = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Get one bootcamp
-//  @route    GET /api/v1/bootcamp/:id
+//  @route    GET /api/v1/bootcamps/:id
 //  @access   Public
 export const getBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findById(req.params.id);
@@ -47,7 +47,7 @@ export const postBootcamp = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Update bootcamp
-//  @route    PUT /api/v1/bootcamp/:id
+//  @route    PUT /api/v1/bootcamps/:id
 //  @access   Private
 export const putBootcamp = asyncHandler(async (req, res, next) => {
   let bootcamp = await Bootcamp.findById(req.params.id);
@@ -74,7 +74,7 @@ export const putBootcamp = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Add photo to bootcamp
-//  @route    PUT /api/v1/bootcamp/:id/photos
+//  @route    PUT /api/v1/bootcamps/:id/photos
 //  @access   Private
 export const uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
   const { MAX_FILE_SIZE, FILE_UPLOAD_PATH } = process.env;
@@ -148,7 +148,7 @@ export const uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Delete bootcamp
-//  @route    DELETE /api/v1/bootcamp/:id
+//  @route    DELETE /api/v1/bootcamps/:id
 //  @access   Private
 export const deleteBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findById(req.params.id);

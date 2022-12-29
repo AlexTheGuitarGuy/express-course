@@ -22,7 +22,7 @@ export const getCourses = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Get one course
-//  @route    GET /api/v1/course/:id
+//  @route    GET /api/v1/courses/:id
 //  @access   Public
 export const getCourse = asyncHandler(async (req, res, next) => {
   const course = await Course.findById(req.params.id).populate({
@@ -68,7 +68,7 @@ export const postCourse = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Update course
-//  @route    PUT /api/v1/course/:id
+//  @route    PUT /api/v1/courses/:id
 //  @access   Private
 export const putCourse = asyncHandler(async (req, res, next) => {
   let course = await Course.findById(req.params.id);
@@ -97,7 +97,7 @@ export const putCourse = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Delete course
-//  @route    DELETE /api/v1/course/:id
+//  @route    DELETE /api/v1/courses/:id
 //  @access   Private
 export const deleteCourse = asyncHandler(async (req, res, next) => {
   const course = await Course.findByIdAndDelete(req.params.id);
