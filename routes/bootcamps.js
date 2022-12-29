@@ -9,6 +9,7 @@ import {
 } from "../controllers/bootcamps.js";
 
 import courseRouter from "./courses.js";
+import reviewRouter from "./reviews.js";
 import advancedResults from "../middleware/advancedResults.js";
 import Bootcamp from "../models/Bootcamp.js";
 import { authorize, protect } from "../middleware/auth.js";
@@ -16,6 +17,7 @@ import { authorize, protect } from "../middleware/auth.js";
 const router = Router();
 
 router.use("/:bootcampId/courses", courseRouter);
+router.use("/:bootcampId/reviews", reviewRouter);
 
 router
   .route("/")

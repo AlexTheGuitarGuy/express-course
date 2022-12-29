@@ -54,7 +54,7 @@ export const putUser = asyncHandler(async (req, res, next) => {
   if (!possibleRoles[user.role])
     return next(new ErrorResponse(`Role ${user.role} is not allowed.`, 403));
 
-  res.status(201).json({ success: true, data: user });
+  res.status(200).json({ success: true, data: user });
 });
 
 //  @desc     Delete user from database
@@ -70,5 +70,5 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
 
   user.remove();
 
-  res.status(201).json({ success: true, data: user });
+  res.status(200).json({ success: true, data: user });
 });
