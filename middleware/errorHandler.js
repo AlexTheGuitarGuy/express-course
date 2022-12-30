@@ -4,10 +4,12 @@ const errorHandler = (err, req, res, next) => {
   let formattedError;
   if (err.statusCode) formattedError = err;
   else if (err.name === "CastError") {
-    formattedError = new ErrorResponse(
-      `Could not find resource with ID ${err.value}`,
-      404
-    );
+    const message =
+      typeof err.value === "string"
+        ? `Could not find resource with ID ${err.value}.`
+        : "Could not find resource.";
+
+    formattedError = new ErrorResponse(message, 404);
   } else if (err.code === 11000) {
     formattedError = new ErrorResponse(`Duplicate field value entered`, 400);
   } else if (err.name === "ValidationError") {
